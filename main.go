@@ -28,11 +28,40 @@ func main() {
     userRepository := user.NewRepository(db)
     userService := user.NewService(userRepository)
 
+
+        // TEST DARI SERVICE.GO
+    //input := user.LoginInput{
+    //    Email: "kjhkjh@domain.com",
+    //    Password: "$2a$04$StqRxVQGKxpVZpJo7iSLu.KUoJ299fIJkDtWUB3UDre78rS78ZIuq",
+    //
+    //}
+    //user, err := userService.Login(input)
+    //if err != nil{
+    //    fmt.Println("terjadi kesalahan ")
+    //    fmt.Println(err.Error())
+    //}
+    //fmt.Println(user.Email)
+    //fmt.Println(user.Name)
+
+
+         //   CODE INPUT HARDCORE
+    // userByEmail, err := userRepository.FindById("kjhkjh@domain.com")
+    // if err != nil {
+    //     fmt.Println(err.Error())
+    // }
+    //if (userByEmail.ID == 0){
+    //    fmt.Println("teu aya user na eung ")
+    //}else{
+    //    fmt.Println("hallo ",userByEmail.Name)
+    //}
+
+
     userHanler := handler.NewUserHandler(userService)
 
     router := gin.Default()
     api := router.Group("/api/v1")
-    api.POST("/usa",userHanler.RegisterUser)
+    api.POST("/users",userHanler.RegisterUser)
+    api.POST("/session",userHanler.Login)
 
    //handler.NewUserHandler(userService)
  //  userHandler := handler.NewUserHandler(userService)
