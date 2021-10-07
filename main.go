@@ -27,6 +27,7 @@ func main() {
 
     userRepository := user.NewRepository(db)
     userService := user.NewService(userRepository)
+    userHanler := handler.NewUserHandler(userService)
 
 
         // TEST DARI SERVICE.GO
@@ -56,12 +57,12 @@ func main() {
     //}
 
 
-    userHanler := handler.NewUserHandler(userService)
 
     router := gin.Default()
     api := router.Group("/api/v1")
     api.POST("/users",userHanler.RegisterUser)
     api.POST("/session",userHanler.Login)
+    api.POST("/email_checkers",userHanler.CheckEmaiAvailability)
 
    //handler.NewUserHandler(userService)
  //  userHandler := handler.NewUserHandler(userService)
