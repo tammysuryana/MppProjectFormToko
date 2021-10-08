@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/tammysuryana93/helper"
 	"github.com/tammysuryana93/user"
@@ -121,7 +122,9 @@ func(h *userHandler) UploadAvatar (c *gin.Context) {
 		c.JSON(402,respose)
 		return
 	}
-	path := "images/" + file.Filename
+	userID := 36
+	//path := "images/" + file.Filename
+	path := fmt.Sprintf("images/%d-%s", userID, file.Filename)
 	err = c.SaveUploadedFile(file, path)
 	if err != nil {
 		data := gin.H{"is uploadeds": false}
@@ -130,7 +133,7 @@ func(h *userHandler) UploadAvatar (c *gin.Context) {
 		return
 	}
 	// harus nya meggunakan JWT
-	userID := 1
+
 	_, err = h.userService.SaveAvatar(userID, path)
 	 if err != nil {
 		 data := gin.H{"is uploadeds": false}
