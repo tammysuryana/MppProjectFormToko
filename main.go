@@ -27,10 +27,13 @@ func main() {
 
     userRepository := user.NewRepository(db)
     userService := user.NewService(userRepository)
-    userHanler := handler.NewUserHandler(userService)
+  //  userService.SaveAvatar(1, "images/1-profile.png")
 
 
-        // TEST DARI SERVICE.GO
+    userHandler := handler.NewUserHandler(userService)
+
+
+    // TEST DARI SERVICE.GO
     //input := user.LoginInput{
     //    Email: "kjhkjh@domain.com",
     //    Password: "$2a$04$StqRxVQGKxpVZpJo7iSLu.KUoJ299fIJkDtWUB3UDre78rS78ZIuq",
@@ -60,9 +63,10 @@ func main() {
 
     router := gin.Default()
     api := router.Group("/api/v1")
-    api.POST("/users",userHanler.RegisterUser)
-    api.POST("/session",userHanler.Login)
-    api.POST("/email_checkers",userHanler.CheckEmaiAvailability)
+    api.POST("/users",userHandler.RegisterUser)
+    api.POST("/session",userHandler.Login)
+    api.POST("/email_checkers",userHandler.CheckEmaiAvailability)
+    api.POST("/avatars",userHandler.UploadAvatar)
 
    //handler.NewUserHandler(userService)
  //  userHandler := handler.NewUserHandler(userService)

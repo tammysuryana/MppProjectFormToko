@@ -1,7 +1,7 @@
 package user
 
 type RegisterUserInput struct {
-	ID 			int    `json:"id"`
+	ID 			int
 	Name 		string `json:"name" binding:"required"`
 	NoKta 		string `json:"nokta" binding:"required"`
 	Occupation  string `json:"occupation" binding:"required"`

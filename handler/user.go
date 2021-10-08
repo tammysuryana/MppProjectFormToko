@@ -6,15 +6,15 @@ import (
 	"github.com/tammysuryana93/user"
 	"net/http"
 )
-
 type userHandler struct {
 	userService user.Service
 }
-
-func NewUserHandler (userService user.Service) *userHandler {
-	return &userHandler{ userService}
+func NewUserHandler(userService user.Service) *userHandler {
+	return &userHandler{userService: userService}
 }
-
+//func NewUserHandler(userService UserService) *userHandler {
+//	return &userHandler{ userService}
+//}
 func (h *userHandler) RegisterUser(c *gin.Context) {
 	// tangkap input dari user
 	// map input dari user  ke struct register user input
@@ -78,7 +78,6 @@ func (h *userHandler) Login (c *gin.Context){
 	c.JSON(200, response)
 	return
 }
-
 func (h *userHandler)CheckEmaiAvailability(c *gin.Context){
 	// ada inpuut email dari user
 	// input email di mapping ke struck inut
@@ -110,8 +109,42 @@ func (h *userHandler)CheckEmaiAvailability(c *gin.Context){
 			if IsEmailAvailable {
 				metaMessage = "Email is Available"
 			}
-
-
 		response := helper.APIResponse(metaMessage, 200, "success",data)
 		c.JSON(200 , response)
+}
+func(h *userHandler) UploadAvatar (c *gin.Context) {
+
+	file, err := c.FormFile("avatar")
+	if err != nil {
+		data := gin.H{"is uploadeds": false}
+		respose := helper.APIResponse("gagal mengupload avatar ", 402, "error", data)
+		c.JSON(402,respose)
+		return
+	}
+	path := "images/" + file.Filename
+	err = c.SaveUploadedFile(file, path)
+	if err != nil {
+		data := gin.H{"is uploadeds": false}
+		respose := helper.APIResponse("gagal mengupload avatar ", 402, "error", data)
+		c.JSON(402, respose)
+		return
+	}
+	// harus nya meggunakan JWT
+	userID := 1
+	_, err = h.userService.SaveAvatar(userID, path)
+	 if err != nil {
+		 data := gin.H{"is uploadeds": false}
+		 respose := helper.APIResponse("gagal mengupload avatar ", 402, "error", data)
+		 c.JSON(402, respose)
+		 return
+	 }
+	data := gin.H{"uploaded Success": true}
+	respose := helper.APIResponse(" avatar TERUPLOAD ", 200, "Suxcess", data)
+	c.JSON(402, respose)
+	// input dari User
+	// simpan gambar nya di folder "images/"
+	// di service kita panggil repository
+	// JWT (sementara di buat hardcore , eakan akan user yang login ID = 1)
+	// repository ambbil data yang ID = 1
+	// repo Update data usern simpan di lokasi file
 }

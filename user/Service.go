@@ -9,6 +9,7 @@ type Service interface {
 	RegisterUser (input RegisterUserInput) (User, error)
 	Login(input LoginInput) (User, error)
 	IsEmailAvailable(input CheckEmailInput)(bool, error)
+	SaveAvatar(Id int, fileLocation string) (User, error)
 
 }
 // maaping struck input ke struct USer
@@ -19,7 +20,6 @@ type service struct {
 func NewService(repository *repository) *service {
 	return &service{repository}
 }
-
 
 func (s *service) RegisterUser(input RegisterUserInput) (User, error) {
 	user := User{}
@@ -45,7 +45,7 @@ func (s *service) Login(input LoginInput) (User, error) {
 	email := input.Email
 	password := input.Password
 
-	user, err := s.repository.FindById(email)
+	user, err := s.repository.FindByEmail(email)
 	if err != nil {
 		return user, err
 	}
@@ -59,13 +59,6 @@ func (s *service) Login(input LoginInput) (User, error) {
 	return user, err
 }
 
-//func (s *service) IsEmailAvailable(input CheckEmailInput) (bool, error) {
-//	email := input.Email
-//	s.repository.Fin
-//}
-
-
-
 func (s *service) IsEmailAvailable (input CheckEmailInput) (bool , error){
 	email := input.Email
 	user, err := s.repository.FindByEmail(email)
@@ -77,4 +70,23 @@ func (s *service) IsEmailAvailable (input CheckEmailInput) (bool , error){
 	}
 	return false , nil
 }
+
+func (s *service) SaveAvatar(Id int, fileLocation string) (User, error) {
+	// dapatkan user berdasarkan ID
+	// update attribute avatar  file Name
+	// simpan perubahan Avatar  file Name
+	user , err := s.repository.FindById(Id)
+	if err != nil {
+		return  user, err
+	}
+	user.Avatar_file_name = fileLocation
+
+	updatedUser, err := s.repository.Update(user)
+	if err != nil {
+		return updatedUser, err
+	}
+	return updatedUser, err
+}
+
+
 
