@@ -3,15 +3,17 @@ package handler
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/tammysuryana93/auth"
 	"github.com/tammysuryana93/helper"
 	"github.com/tammysuryana93/user"
 	"net/http"
 )
 type userHandler struct {
 	userService user.Service
+	authServices auth.Servis
 }
-func NewUserHandler(userService user.Service) *userHandler {
-	return &userHandler{userService: userService}
+func NewUserHandler(userService user.Service, authServis auth.Servis) *userHandler {
+	return &userHandler{  userService, authServis }
 }
 //func NewUserHandler(userService UserService) *userHandler {
 //	return &userHandler{ userService}
@@ -20,7 +22,6 @@ func (h *userHandler) RegisterUser(c *gin.Context) {
 	// tangkap input dari user
 	// map input dari user  ke struct register user input
 	// struct di atas kita passing sebgagai parameter service
-
 
 	var input user.RegisterUserInput
 
@@ -40,9 +41,9 @@ func (h *userHandler) RegisterUser(c *gin.Context) {
 		c.JSON(http.StatusUnprocessableEntity, response)
 		return
 	}
-	// token , err := h.jwtService.GenerateToken()
+	token , err := h.authServices.GenerateToken(newUser.ID)
 
-	formatter := user.FormatUser(newUser,"tokentokenkentotoketkentot")
+	formatter := user.FormatUser(newUser,token)
 	response := helper.APIResponse("Account has been registered", http.StatusOK,"success", formatter)
 	c.JSON(http.StatusOK, response)
 
@@ -62,7 +63,7 @@ func (h *userHandler) Login (c *gin.Context){
 		errors := helper.FormatValidasiErrot(err)
 		errorMessage := gin.H{"errors":errors}
 
-		response := helper.APIResponse("fail login ", http.StatusUnprocessableEntity,"status err", errorMessage)
+		response := helper.APIResponse("fail login ", 422,"status err", errorMessage)
 		c.JSON(http.StatusUnprocessableEntity, response)
 		return
 	}
@@ -74,7 +75,9 @@ func (h *userHandler) Login (c *gin.Context){
 		c.JSON(422, response)
 		return
 	}
-	formatter := user.FormatUser(loggedinUser, "totkoktoktoktoktok")
+	token, err := h.authServices.GenerateToken(loggedinUser.ID)
+
+	formatter := user.FormatUser(loggedinUser, token)
 	response := helper.APIResponse("Success ", 200,"Yeah", formatter)
 	c.JSON(200, response)
 	return
@@ -132,7 +135,6 @@ func(h *userHandler) UploadAvatar (c *gin.Context) {
 		c.JSON(402, respose)
 		return
 	}
-	// harus nya meggunakan JWT
 
 	_, err = h.userService.SaveAvatar(userID, path)
 	 if err != nil {
